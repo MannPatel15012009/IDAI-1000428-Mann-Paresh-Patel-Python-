@@ -26,7 +26,34 @@ DATA_FILE = "water_buddy_data.txt"
 XP_PER_LEVEL = 1000
 
 
-# ===== LOAD & SAVE DATA (unchanged logic, Streamlit-compatible) =====
+# ===== DARK MODE CSS =====
+def apply_darkmode():
+    if st.session_state.get("dark_mode", False):
+        dark_css = """
+        <style>
+            body {
+                background-color: #0e1117 !important;
+            }
+            .stApp {
+                background-color: #0e1117 !important;
+                color: white !important;
+            }
+            .css-1n543e5, .css-1y4p8pa, .css-1kyxreq, .css-12w0qpk {
+                background-color: #1a1d23 !important;
+                color: white !important;
+            }
+            .stMarkdown, .stText, p, label, span {
+                color: white !important;
+            }
+            .stMetric label {
+                color: white !important;
+            }
+        </style>
+        """
+        st.markdown(dark_css, unsafe_allow_html=True)
+
+
+# ===== LOAD & SAVE DATA =====
 def load_data():
     data = {
         "xp": 0,
@@ -50,7 +77,6 @@ def load_data():
             lines = f.readlines()
 
         is_history = False
-
         for line in lines:
             line = line.strip()
             if not line:
@@ -63,13 +89,17 @@ def load_data():
             if not is_history:
                 if "=" in line:
                     k, v = line.split("=", 1)
-                    if k in ["use_weight", "use_custom", "dark_mode",
-                             "has_glasses", "has_crown", "has_bowtie", "has_partyhat"]:
+                    if k in [
+                        "use_weight", "use_custom", "dark_mode",
+                        "has_glasses", "has_crown",
+                        "has_bowtie", "has_partyhat"
+                    ]:
                         data[k] = (v == "True")
                     elif k in ["xp", "level"]:
                         data[k] = int(v)
                     else:
                         data[k] = v
+
             else:
                 if "|" in line:
                     d, intake, goal = line.split("|")
@@ -78,7 +108,6 @@ def load_data():
                         "goal": int(goal)
                     }
 
-        # Restore today's intake
         today = str(datetime.date.today())
         if today in data["history"]:
             data["current_intake"] = data["history"][today]["intake"]
@@ -109,7 +138,6 @@ def save_data():
             f.write("\n[HISTORY]\n")
             for date, h in d.history.items():
                 f.write(f"{date}|{h['intake']}|{h['goal']}\n")
-
     except Exception as e:
         st.error(f"Error saving: {e}")
 
@@ -119,7 +147,6 @@ def draw_mascot(pct):
     img = Image.new("RGBA", (400, 400), (255, 255, 255, 0))
     d = ImageDraw.Draw(img)
 
-    # Mascot color logic
     if pct > 1:
         face = "#8b5cf6"
     elif pct == 1:
@@ -131,7 +158,6 @@ def draw_mascot(pct):
 
     d.ellipse((100, 80, 300, 280), fill=face, outline="black", width=4)
 
-    # Eyes / sunglasses
     if pct >= 1 or st.session_state.has_glasses:
         d.rectangle((150, 130, 180, 160), fill="black")
         d.rectangle((220, 130, 250, 160), fill="black")
@@ -140,7 +166,6 @@ def draw_mascot(pct):
         d.ellipse((155, 135, 170, 150), fill="black")
         d.ellipse((230, 135, 245, 150), fill="black")
 
-    # Mouth
     if pct >= 1:
         d.arc((150, 160, 250, 220), 0, 180, fill="black", width=4)
     elif pct >= 0.5:
@@ -148,7 +173,6 @@ def draw_mascot(pct):
     else:
         d.line((170, 210, 230, 210), fill="black", width=4)
 
-    # Accessories
     if st.session_state.has_crown:
         d.polygon([(160, 60), (190, 110), (210, 60), (230, 110), (260, 60)], fill="#fbbf24")
 
@@ -162,7 +186,7 @@ def draw_mascot(pct):
     return img
 
 
-# ===== CALCULATE GOAL SAFELY =====
+# ===== CALCULATE GOAL =====
 def recalc_goal():
     d = st.session_state
 
@@ -183,7 +207,7 @@ def recalc_goal():
     save_data()
 
 
-# ===== XP, WATER, HISTORY =====
+# ===== WATER / XP FUNCTIONS =====
 def add_xp(amount):
     st.session_state.xp += amount
     new_level = 1 + st.session_state.xp // XP_PER_LEVEL
@@ -216,10 +240,10 @@ def reset_day():
     save_data()
 
 
-# ===== STREAMLIT UI =====
+# ===== STREAMLIT PAGE CONFIG =====
 st.set_page_config(page_title="WaterBuddy Streamlit", layout="wide")
 
-# Load data on first launch
+# LOAD DATA
 if "loaded" not in st.session_state:
     loaded = load_data()
     for k, v in loaded.items():
@@ -227,12 +251,14 @@ if "loaded" not in st.session_state:
     recalc_goal()
     st.session_state.loaded = True
 
+# APPLY DARKMODE AFTER LOADING SESSION STATE
+apply_darkmode()
 
 # ===== SIDEBAR =====
 st.sidebar.title("WaterBuddy Controls")
 
 st.sidebar.subheader("Goal Settings")
-# Use keys + on_change so selecting/changing immediately recalculates the daily goal.
+
 st.sidebar.selectbox(
     "Age Group",
     list(AGE_GUIDELINES.keys()),
@@ -291,8 +317,13 @@ if st.sidebar.button("💡 Hydration Tip"):
 if st.sidebar.button("Reset Day"):
     reset_day()
 
-# Store dark_mode value back to session_state correctly
-st.sidebar.checkbox("Dark Mode", value=st.session_state.dark_mode, key="dark_mode")
+# DARK MODE TOGGLE (WORKING)
+st.sidebar.checkbox(
+    "Dark Mode",
+    value=st.session_state.dark_mode,
+    key="dark_mode",
+    on_change=apply_darkmode
+)
 
 
 # ===== MAIN UI =====
@@ -337,7 +368,6 @@ def toggle_item(cost, key, name):
         save_data()
     else:
         st.error("Not enough XP.")
-
 
 if colA.button("😎 Sunglasses — 200 XP"):
     toggle_item(200, "has_glasses", "Sunglasses")
