@@ -31,27 +31,91 @@ def apply_darkmode():
     if st.session_state.get("dark_mode", False):
         dark_css = """
         <style>
-            body {
-                background-color: #0e1117 !important;
+            /* ---------- GLOBAL BACKGROUND ---------- */
+            body, .stApp {
+                background-color: #0d1117 !important;
+                color: #ffffff !important;
             }
-            .stApp {
-                background-color: #0e1117 !important;
+
+            /* ---------- SIDEBAR ---------- */
+            section[data-testid="stSidebar"] {
+                background-color: #161b22 !important;
+            }
+            section[data-testid="stSidebar"] * {
+                color: #ffffff !important;
+            }
+
+            /* ---------- HEADERS, TEXT, LABELS ---------- */
+            h1, h2, h3, h4, h5, h6, p, label, span, div {
+                color: #e6eef5 !important;
+            }
+
+            /* ---------- METRIC CARDS ---------- */
+            div[data-testid="stMetricValue"] {
                 color: white !important;
             }
-            .css-1n543e5, .css-1y4p8pa, .css-1kyxreq, .css-12w0qpk {
-                background-color: #1a1d23 !important;
+            div[data-testid="stMetricLabel"] {
+                color: #9db3c8 !important;
+            }
+
+            /* ---------- SELECTBOX & INPUTS ---------- */
+            .stSelectbox > div, .stTextInput > div, .stNumberInput > div {
+                background-color: #161b22 !important;
+                border-radius: 6px;
+            }
+            .stSelectbox select, input[type="text"], input[type="number"] {
+                background-color: #0d1117 !important;
+                color: white !important;
+                border: 1px solid #30363d !important;
+            }
+
+            /* ---------- BUTTONS ---------- */
+            button[kind="primary"], button[kind="secondary"] {
+                background-color: #238636 !important;
+                color: white !important;
+                border: 1px solid #2ea043 !important;
+            }
+            button:hover {
+                background-color: #2ea043 !important;
+            }
+
+            /* ---------- CHECKBOX & RADIO ---------- */
+            .stCheckbox label, .stRadio label {
                 color: white !important;
             }
-            .stMarkdown, .stText, p, label, span {
+
+            /* ---------- INPUT BOXES ---------- */
+            textarea, .stTextArea textarea {
+                background-color: #0d1117 !important;
+                color: white !important;
+                border: 1px solid #30363d !important;
+            }
+
+            /* ---------- EXPANDER ---------- */
+            details {
+                background-color: #161b22 !important;
+                color: white !important;
+                border: 1px solid #30363d !important;
+            }
+
+            /* ---------- PROGRESS BAR ---------- */
+            .stProgress > div > div {
+                background-color: #238636 !important;
+            }
+
+            /* ---------- TABLES ---------- */
+            table {
+                background-color: #161b22 !important;
                 color: white !important;
             }
-            .stMetric label {
-                color: white !important;
+            thead th {
+                background-color: #1b222d !important;
+                color: #d7e2ec !important;
             }
+
         </style>
         """
         st.markdown(dark_css, unsafe_allow_html=True)
-
 
 # ===== LOAD & SAVE DATA =====
 def load_data():
