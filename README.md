@@ -1,8 +1,3 @@
-Here’s a **clean, professional, GitHub-ready project description** for your Streamlit app.
-I will leave a clear placeholder where you can insert your Streamlit link.
-
----
-
 # 🚰 **Water Buddy – Your Daily Hydration Tracker (Streamlit App)**
 
 **Water Buddy** is a lightweight and intelligent hydration-tracking app built with **Streamlit**.
