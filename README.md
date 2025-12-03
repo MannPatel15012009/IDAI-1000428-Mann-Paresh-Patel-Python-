@@ -1,3 +1,10 @@
+# Name:Mann Paresh Patel
+# WACP No.:1000428
+# CRS Subject:Python Programming
+# Course Name:IBCP(AI)
+# School Name: Aspee Nutan Academy
+
+
 # 🚰 **Water Buddy – Your Daily Hydration Tracker (Streamlit App)**
 
 **Water Buddy** is a lightweight and intelligent hydration-tracking app built with **Streamlit**.
