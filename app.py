@@ -232,12 +232,41 @@ if "loaded" not in st.session_state:
 st.sidebar.title("WaterBuddy Controls")
 
 st.sidebar.subheader("Goal Settings")
-st.session_state.age = st.sidebar.selectbox("Age Group", AGE_GUIDELINES.keys())
-st.session_state.weight = st.sidebar.text_input("Weight (kg)", st.session_state.weight)
-st.session_state.use_weight = st.sidebar.checkbox("Use Weight Goal", st.session_state.use_weight)
+# Use keys + on_change so selecting/changing immediately recalculates the daily goal.
+st.sidebar.selectbox(
+    "Age Group",
+    list(AGE_GUIDELINES.keys()),
+    key="age",
+    on_change=recalc_goal
+)
 
-st.session_state.custom_goal = st.sidebar.text_input("Custom Goal (ml)", st.session_state.custom_goal)
-st.session_state.use_custom = st.sidebar.checkbox("Use Custom Goal", st.session_state.use_custom)
+st.sidebar.text_input(
+    "Weight (kg)",
+    value=st.session_state.weight,
+    key="weight",
+    on_change=recalc_goal
+)
+
+st.sidebar.checkbox(
+    "Use Weight Goal",
+    value=st.session_state.use_weight,
+    key="use_weight",
+    on_change=recalc_goal
+)
+
+st.sidebar.text_input(
+    "Custom Goal (ml)",
+    value=st.session_state.custom_goal,
+    key="custom_goal",
+    on_change=recalc_goal
+)
+
+st.sidebar.checkbox(
+    "Use Custom Goal",
+    value=st.session_state.use_custom,
+    key="use_custom",
+    on_change=recalc_goal
+)
 
 if st.sidebar.button("Apply Goal"):
     recalc_goal()
@@ -262,7 +291,8 @@ if st.sidebar.button("💡 Hydration Tip"):
 if st.sidebar.button("Reset Day"):
     reset_day()
 
-st.sidebar.checkbox("Dark Mode", st.session_state.dark_mode)
+# Store dark_mode value back to session_state correctly
+st.sidebar.checkbox("Dark Mode", value=st.session_state.dark_mode, key="dark_mode")
 
 
 # ===== MAIN UI =====
